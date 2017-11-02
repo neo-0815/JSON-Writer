@@ -1,5 +1,7 @@
 package me.neo_0815.json.frame;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -23,10 +26,13 @@ import me.neo_0815.json.file.JSON_FileManager;
 public class JSON_Writer extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTextField modid;
-	private JTextField name;
-	private JTextField path;
+	private final JPanel contentPane;
+	private final JTextField modid;
+	private final JTextField name;
+	private final JTextField path;
+
+	private final String succesText = " was created succesfully!";
+	private final Font succesFont = new Font("Consolas", Font.LAYOUT_RIGHT_TO_LEFT, 13);
 
 	public JSON_Writer() {
 		setForeground(SystemColor.desktop);
@@ -41,31 +47,39 @@ public class JSON_Writer extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JRadioButton rdbtnItem = new JRadioButton("Item");
+		final JLabel lblSucces = new JLabel();
+		lblSucces.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblSucces.setBounds(81, 215, 351, 16);
+		lblSucces.setFont(succesFont);
+		lblSucces.setForeground(Color.GREEN);
+		contentPane.add(lblSucces);
+
+		final JRadioButton rdbtnItem = new JRadioButton("Item");
 		rdbtnItem.setBounds(8, 239, 50, 24);
 		contentPane.add(rdbtnItem);
 
-		JRadioButton rdbtnBlock = new JRadioButton("Block");
-		rdbtnBlock.setBounds(8, 206, 57, 24);
+		final JRadioButton rdbtnBlock = new JRadioButton("Block");
+		rdbtnBlock.setBounds(8, 211, 57, 24);
 		contentPane.add(rdbtnBlock);
 
-		ButtonGroup btngroup = new ButtonGroup();
+		final ButtonGroup btngroup = new ButtonGroup();
 		btngroup.add(rdbtnItem);
 		btngroup.add(rdbtnBlock);
 
-		JButton btnGenerate = new JButton("Generate");
+		final JButton btnGenerate = new JButton("Generate");
 		btnGenerate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object source = e.getSource();
+				final Object source = e.getSource();
 
-				if(source == btnGenerate) {
-					if(!path.getText().isEmpty() && !modid.getText().isEmpty() && !name.getText().isEmpty()) {
-						if(rdbtnItem.isSelected()) JSON_FileManager.createItemFile(modid.getText(), name.getText(), new File(path.getText() + name.getText() + ".json"));
-						else if(rdbtnBlock.isSelected()) JSON_FileManager.createBlockFile(modid.getText(), name.getText(), new File(path.getText() + name.getText() + "(block_item).json"), new File(path.getText() + name.getText() + ".json"), new File(path.getText() + name.getText() + "(blockstate).json"));
+				if(source == btnGenerate) if(!path.getText().isEmpty() && !modid.getText().isEmpty() && !name.getText().isEmpty() && (rdbtnItem.isSelected() || rdbtnBlock.isSelected())) {
+					if(rdbtnItem.isSelected()) JSON_FileManager.createItemFile(modid.getText(), name.getText(), new File(path.getText() + name.getText() + ".json"));
+					else if(rdbtnBlock.isSelected()) JSON_FileManager.createBlockFile(modid.getText(), name.getText(), new File(path.getText() + name.getText() + "(block_item).json"), new File(path.getText() + name.getText() + ".json"), new File(path.getText() + name.getText() + "(blockstate).json"));
 
-						BUILD_FileManager.setModID(path.getText(), modid.getText());
-					}
+					lblSucces.setText(name.getText() + succesText);
+					name.setText(null);
+
+					BUILD_FileManager.setModID(path.getText(), modid.getText());
 				}
 			}
 		});
@@ -77,11 +91,11 @@ public class JSON_Writer extends JFrame {
 		modid.setBounds(81, 99, 114, 20);
 		contentPane.add(modid);
 
-		JLabel lblModId = new JLabel("MOD ID:");
+		final JLabel lblModId = new JLabel("MOD ID:");
 		lblModId.setBounds(8, 101, 55, 16);
 		contentPane.add(lblModId);
 
-		JLabel lblUnlocalizedRegistry = new JLabel("Unlocalized / Registry Name:");
+		final JLabel lblUnlocalizedRegistry = new JLabel("Unlocalized / Registry Name:");
 		lblUnlocalizedRegistry.setBounds(8, 129, 168, 16);
 		contentPane.add(lblUnlocalizedRegistry);
 
@@ -89,7 +103,7 @@ public class JSON_Writer extends JFrame {
 		name.setBounds(194, 127, 200, 20);
 		contentPane.add(name);
 
-		JLabel lblPath = new JLabel("Path:");
+		final JLabel lblPath = new JLabel("Path:");
 		lblPath.setBounds(39, 12, 37, 16);
 		contentPane.add(lblPath);
 
@@ -97,21 +111,21 @@ public class JSON_Writer extends JFrame {
 		path.setBounds(94, 10, 267, 20);
 		contentPane.add(path);
 
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Zielordner festlegen", "neo_0815");
+		final JFileChooser chooser = new JFileChooser();
+		final FileNameExtensionFilter filter = new FileNameExtensionFilter("Zielordner festlegen", "neo_0815");
 		chooser.setFileFilter(filter);
 
-		JButton btnFile = new JButton("...");
+		final JButton btnFile = new JButton("...");
 		btnFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object source = e.getSource();
+				final Object source = e.getSource();
 
 				if(source == btnFile) {
-					int value = chooser.showOpenDialog(btnFile);
+					final int value = chooser.showOpenDialog(btnFile);
 
 					if(value == JFileChooser.APPROVE_OPTION) {
-						File file = chooser.getSelectedFile();
+						final File file = chooser.getSelectedFile();
 						path.setText(file.getPath());
 						path.setText(path.getText().replaceAll("build.neo_0815", ""));
 						modid.setText(BUILD_FileManager.getModID(path.getText()));
